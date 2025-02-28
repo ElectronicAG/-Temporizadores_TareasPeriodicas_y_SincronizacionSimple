@@ -1,0 +1,8 @@
+Aprender a configurar temporizadores (timers)
+Aprender a configurar hilos como tareas periódicas
+Observar ventajas y desventajas de sincronizar
+
+
+presten atención a la presentación del lab 6.
+Lab6_files_y_strings.c (en Canvas).
+este laboratorio (y para futuros laboratorios).

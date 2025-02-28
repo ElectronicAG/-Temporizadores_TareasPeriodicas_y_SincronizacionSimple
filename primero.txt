@@ -1,0 +1,8 @@
+Objetivos
+en espacio de usuario.
+y a establecer la prioridad de dichas tareas.
+tareas usando únicamente períodos y tiempos de inicio.
+Duración: 2 sesiones
+Antes de comenzar los experimentos descritos abajo,
+Estudien los archivos Lab6_Timer_functions.c y
+Las funciones mostradas les servirán para completar
