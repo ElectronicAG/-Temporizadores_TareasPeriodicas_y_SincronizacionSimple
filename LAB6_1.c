@@ -21,7 +21,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////
 //Definiciones
-////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////|
 #define MAX_LETRAS 100
 #define MAX_CADENAS 60
 
@@ -31,7 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 //Variables globales
 ////////////////////////////////////////////////////////////////////////////////////
-pthread_t hilo_1, hilo_2, hilo_3; // Hilos
+pthread_t hilo[3]; // 3 hilos
 FILE *fp_original, *fp_primero, *fp_segundo;// Archivos
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -40,19 +40,19 @@ FILE *fp_original, *fp_primero, *fp_segundo;// Archivos
 void FIRST(void *ptr) {
     // Implementación de la función PRIMERO
 
-    return NULL;
+    
 }
 
 void SECOND(void *ptr) {
     // Implementación de la función SEGUNDO
   
-    return NULL;
+    
 }
 
 void THIRD(void *ptr) {
     // Implementación de la función TERCERO
 
-    return NULL;
+    
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -61,9 +61,9 @@ void THIRD(void *ptr) {
 
 int main(void) {
 
-    pthread_create(&hilo_1, NULL, PRIMERO, NULL);
-    pthread_create(&hilo_2, NULL, SEGUNDO, NULL);
-    pthread_create(&hilo_3, NULL, TERCERO, NULL);
+    pthread_create(&hilos[0], NULL, (void*)&FIRST, NULL);
+    pthread_create(&hilos[2], NULL, (void*)&SECOND, NULL);
+    pthread_create(&hilos[3], NULL, (void*)&THIRD, NULL);
 
     while(1){
 
