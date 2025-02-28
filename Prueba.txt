@@ -1,0 +1,16 @@
+Objetivos
+Aprender a configurar temporizadores (timers)
+en espacio de usuario.
+Aprender a configurar hilos como tareas periódicas
+y a establecer la prioridad de dichas tareas.
+Observar ventajas y desventajas de sincronizar
+tareas usando únicamente períodos y tiempos de inicio.
+
+Duración: 2 sesiones
+
+Antes de comenzar los experimentos descritos abajo,
+presten atención a la presentación del lab 6.
+Estudien los archivos Lab6_Timer_functions.c y
+Lab6_files_y_strings.c (en Canvas).
+Las funciones mostradas les servirán para completar
+este laboratorio (y para futuros laboratorios).
