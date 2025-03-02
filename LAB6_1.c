@@ -4,7 +4,7 @@
 //Alan Gomez - 22115
 //Samuel Tortola - 22094
 //Digital - 3 IE9059
-//Laboratorio 6 
+//Laboratorio 6 7
 //Temporizadores, Tareas Periódicas y Sincronización Simple 
 //FECHA 4/03/2025
 ////////////////////////////////////////////////////////////////////////////////////
