@@ -5,6 +5,7 @@
 //Samuel Tortola - 22094
 //Digital - 3 IE9059
 //Laboratorio 6 
+//Hardware: Raspberry Pi 5 8GB RAM
 //Temporizadores, Tareas Periódicas y Sincronización Simple
 //FECHA 2/03/2025
 ////////////////////////////////////////////////////////////////////////////////////
