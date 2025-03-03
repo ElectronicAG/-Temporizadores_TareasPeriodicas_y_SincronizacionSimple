@@ -62,9 +62,9 @@ void THIRD(void *ptr) {
 
 int main(void) {
 
-    pthread_create(&hilos[0], NULL, (void*)&FIRST, NULL);
-    pthread_create(&hilos[2], NULL, (void*)&SECOND, NULL);
-    pthread_create(&hilos[3], NULL, (void*)&THIRD, NULL);
+    pthread_create(&hilo[0], NULL, (void*)&FIRST, NULL);
+    pthread_create(&hilo[1], NULL, (void*)&SECOND, NULL);
+    pthread_create(&hilo[2], NULL, (void*)&THIRD, NULL);
 
     while(1){
 
