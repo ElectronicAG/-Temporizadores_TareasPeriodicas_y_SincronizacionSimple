@@ -41,9 +41,15 @@
 #define SEGUNDO "Lab6_segundo.txt"
 #define RECONSTRUIDO "Lab6_reconstruido.txt"
 
-#define PERIOD_FIRST 100000000  //
+#define PERIOD_FIRST 100000000  
 #define PERIOD_THIRD 200000000  
 #define PERIOD_SECOND 500000000 
+
+#define DES_FIRST 100000000  
+#define DES_THIRD 200000000  
+#define DES_SECOND 500000000 
+
+
 
 
 #define MI_PRIORIDAD 1
