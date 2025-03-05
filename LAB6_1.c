@@ -41,13 +41,13 @@
 #define SEGUNDO "Lab6_segundo.txt"
 #define RECONSTRUIDO "Lab6_reconstruido.txt"
 
-#define PERIOD_FIRST 1000000000000  // n
-#define PERIOD_SECOND 1000000000000  // n
-#define PERIOD_THIRD 500000000000 // n/2
+#define PERIOD_FIRST 100000000  // n = 100ms
+#define PERIOD_SECOND 100000000  // n = 100ms
+#define PERIOD_THIRD 50000000 // n/2 = 50ms
 
-#define DES_FIRST 10000 // n
-#define DES_SECOND 5000010000  // n/2
-#define DES_THIRD 2500010000  //n/4
+#define DES_FIRST 10000000 // z = 10ms
+#define DES_SECOND 60000000  // z + n/2 = 60ms
+#define DES_THIRD 35000000  // z + n/4 = 35ms
 
 
 
@@ -71,12 +71,15 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;   //Mas seguridad a los hilos
 int finishedFirst = 0;
 int finishedSecond = 0;
 
+//long periodo, desfase;
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 //Funciones
 ////////////////////////////////////////////////////////////////////////////////////
 
 // Configurar prioridad del hilo
+
 void configurar_prioridad() {
     struct sched_param param;
     param.sched_priority = MI_PRIORIDAD;
