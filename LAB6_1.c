@@ -41,11 +41,11 @@
 #define SEGUNDO "Lab6_segundo.txt"
 #define RECONSTRUIDO "Lab6_reconstruido.txt"
 
-#define PERIOD_FIRST 400000000  // 300ms
-#define PERIOD_THIRD 200000000  // 200ms
-#define PERIOD_SECOND 400000000 // 400ms
+#define PERIOD_FIRST 100000000  //
+#define PERIOD_THIRD 200000000  
+#define PERIOD_SECOND 500000000 
 
-#define OFFSET_NS 0
+
 #define MI_PRIORIDAD 1
 
 
@@ -81,7 +81,7 @@ void configurar_prioridad() {
 }
 
 // Configurar Timer con diferentes periodos
-int configurar_timer(long periodo) {
+int configurar_timer(long periodo, long desfase) {
     int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0);
     if (timer_fd == -1) {
         perror("Error al crear el timer");
@@ -92,7 +92,7 @@ int configurar_timer(long periodo) {
     itval.it_interval.tv_sec = 0;
     itval.it_interval.tv_nsec = periodo; // Periodo diferente por hilo
     itval.it_value.tv_sec = 0;
-    itval.it_value.tv_nsec = 1; // Desfase inicial para alternancia
+    itval.it_value.tv_nsec = desfase; // Desfase inicial para alternancia
 
     if (timerfd_settime(timer_fd, 0, &itval, NULL) == -1) {
         perror("Error al configurar el timer");
@@ -116,7 +116,7 @@ void FIRST(void *ptr) {
 		exit(0);
 	}
 
-	int timer_fd = configurar_timer(PERIOD_FIRST); // Periodo de 300ms, sin desfase
+	int timer_fd = configurar_timer(PERIOD_FIRST,1); 
     uint64_t expirations;
 
 
@@ -148,7 +148,7 @@ void SECOND(void *ptr) {
 		exit(0);
 	}
 
-	int timer_fd = configurar_timer(PERIOD_SECOND); // Periodo de 400ms, inicia a los 200ms
+	int timer_fd = configurar_timer(PERIOD_SECOND,100); 
     uint64_t expirations;
 
 	while (fgets(buffer, MAX_LETRAS, segundo) != NULL) {
@@ -171,33 +171,33 @@ void SECOND(void *ptr) {
 void THIRD(void *ptr) {  
 
 	configurar_prioridad();
-    int timer_fd = configurar_timer(PERIOD_THIRD); // Periodo de 200ms, inicia a los 100ms
+    int timer_fd = configurar_timer(PERIOD_THIRD,10000);   //1 milisegundo (1 ms) equivale a 1,000,000 nanosegundos (1,000,000 ns).
     uint64_t expirations;
 
     while (cont < MAX_CADENAS) {
+
         read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
+
+        printf("%d", flag_buffer_ready);
         pthread_mutex_lock(&mutex);
 
-        if (flag_buffer_ready == 1) { // Solo guardar si hay una línea lista
+     //   if (flag_buffer_ready == 1) { // Solo guardar si hay una línea lista
             strcpy(StringArray[cont], buffer);
             printf("[THIRD] Guardando: %s", StringArray[cont]);
             cont++;
             flag_buffer_ready = 0; // Resetear la bandera
-        }
-
-      //  else {
-            // No hay línea lista
-            // Si Hilo1 y Hilo2 ya terminaron, no habrá más datos
-            if (finishedFirst == 1 && finishedSecond == 1) {
-                pthread_mutex_unlock(&mutex);
-                break;  // Sal del while
-            }
+           
+           
       //  }
+
+    
         pthread_mutex_unlock(&mutex);
+
+	
+    
     }
 
-	pthread_exit(0);	// Para salir correctamente del hilo.
-    
+    pthread_exit(0);	// Para salir correctamente del hilo.
 }
 
 
