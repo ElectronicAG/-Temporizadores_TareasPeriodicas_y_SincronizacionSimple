@@ -41,13 +41,13 @@
 #define SEGUNDO "Lab6_segundo.txt"
 #define RECONSTRUIDO "Lab6_reconstruido.txt"
 
-#define PERIOD_FIRST 100000000  // n = 100ms
-#define PERIOD_SECOND 100000000  // n = 100ms
-#define PERIOD_THIRD 50000000 // n/2 = 50ms
+#define PERIOD_FIRST 40000000  // n = 40ms
+#define PERIOD_SECOND 40000000  // n = 40ms
+#define PERIOD_THIRD 20000000 // n/2 = 20ms
 
-#define DES_FIRST 10000000 // z = 10ms
-#define DES_SECOND 60000000  // z + n/2 = 60ms
-#define DES_THIRD 35000000  // z + n/4 = 35ms
+#define DES_FIRST 1000000 // z = 1ms
+#define DES_SECOND 21000000 // z + n/2 = 21ms
+#define DES_THIRD 11000000  // z + n/4 = 11ms
 
 
 
