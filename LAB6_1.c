@@ -41,13 +41,13 @@
 #define SEGUNDO "Lab6_segundo.txt"
 #define RECONSTRUIDO "Lab6_reconstruido.txt"
 
-#define PERIOD_FIRST 100000000  
-#define PERIOD_THIRD 200000000  
-#define PERIOD_SECOND 500000000 
+#define PERIOD_FIRST 1000000000000  // n
+#define PERIOD_SECOND 1000000000000  // n
+#define PERIOD_THIRD 500000000000 // n/2
 
-#define DES_FIRST 100000000  
-#define DES_THIRD 200000000  
-#define DES_SECOND 500000000 
+#define DES_FIRST 10000 // n
+#define DES_SECOND 5000010000  // n/2
+#define DES_THIRD 2500010000  //n/4
 
 
 
@@ -122,7 +122,7 @@ void FIRST(void *ptr) {
 		exit(0);
 	}
 
-	int timer_fd = configurar_timer(PERIOD_FIRST,1); 
+	int timer_fd = configurar_timer(PERIOD_FIRST,DES_FIRST); 
     uint64_t expirations;
 
 
@@ -154,7 +154,7 @@ void SECOND(void *ptr) {
 		exit(0);
 	}
 
-	int timer_fd = configurar_timer(PERIOD_SECOND,100); 
+	int timer_fd = configurar_timer(PERIOD_SECOND,DES_SECOND); 
     uint64_t expirations;
 
 	while (fgets(buffer, MAX_LETRAS, segundo) != NULL) {
@@ -177,7 +177,7 @@ void SECOND(void *ptr) {
 void THIRD(void *ptr) {  
 
 	configurar_prioridad();
-    int timer_fd = configurar_timer(PERIOD_THIRD,10000);   //1 milisegundo (1 ms) equivale a 1,000,000 nanosegundos (1,000,000 ns).
+    int timer_fd = configurar_timer(PERIOD_THIRD,DES_THIRD);   //1 milisegundo (1 ms) equivale a 1,000,000 nanosegundos (1,000,000 ns).
     uint64_t expirations;
 
     while (cont < MAX_CADENAS) {
