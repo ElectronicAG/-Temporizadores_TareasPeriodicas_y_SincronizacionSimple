@@ -41,11 +41,11 @@
 #define SEGUNDO "Lab6_segundo.txt"
 #define RECONSTRUIDO "Lab6_reconstruido.txt"
 
-#define PERIOD_FIRST 300000000  // 300ms
+#define PERIOD_FIRST 400000000  // 300ms
 #define PERIOD_THIRD 200000000  // 200ms
 #define PERIOD_SECOND 400000000 // 400ms
 
-#define OFFSET_NS 100000000  // 100ms de desfase
+#define OFFSET_NS 0
 #define MI_PRIORIDAD 1
 
 
@@ -53,12 +53,18 @@
 //Variables globales
 ////////////////////////////////////////////////////////////////////////////////////
 
-FILE *primero, *segundo;// Archivos
+FILE *primero, *segundo, *reconstruido;// Archivos
 char buffer[MAX_LETRAS + 1];  // Buffer global
 char StringArray[MAX_CADENAS][MAX_LETRAS+1]; // arreglo de cadenas
 int cont = 0;
 
+int flag_buffer_ready = 0; // 0 = No hay línea nueva, 1 = Línea lista para guardar
+
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;   //Mas seguridad a los hilos, evita que dos hilos accedan a la misma variable al mismo tiempo
+
+int finishedFirst = 0;
+int finishedSecond = 0;
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 //Funciones
@@ -75,7 +81,7 @@ void configurar_prioridad() {
 }
 
 // Configurar Timer con diferentes periodos
-int configurar_timer(long periodo, long offset) {
+int configurar_timer(long periodo) {
     int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0);
     if (timer_fd == -1) {
         perror("Error al crear el timer");
@@ -86,7 +92,7 @@ int configurar_timer(long periodo, long offset) {
     itval.it_interval.tv_sec = 0;
     itval.it_interval.tv_nsec = periodo; // Periodo diferente por hilo
     itval.it_value.tv_sec = 0;
-    itval.it_value.tv_nsec = offset; // Desfase inicial para alternancia
+    itval.it_value.tv_nsec = 1; // Desfase inicial para alternancia
 
     if (timerfd_settime(timer_fd, 0, &itval, NULL) == -1) {
         perror("Error al configurar el timer");
@@ -110,7 +116,7 @@ void FIRST(void *ptr) {
 		exit(0);
 	}
 
-	int timer_fd = configurar_timer(PERIOD_FIRST, OFFSET_NS); // Periodo de 300ms, sin desfase
+	int timer_fd = configurar_timer(PERIOD_FIRST); // Periodo de 300ms, sin desfase
     uint64_t expirations;
 
 
@@ -119,11 +125,13 @@ void FIRST(void *ptr) {
         pthread_mutex_lock(&mutex);
         printf("[FIRST] Leyó: %s", buffer);
         pthread_mutex_unlock(&mutex);
+        flag_buffer_ready = 1;
     }
 
 	fclose(primero);
 	
-
+    finishedFirst = 1;
+    printf("%d",finishedFirst);
 	pthread_exit(0);	// Para salir correctamente del hilo.
 
     
@@ -140,7 +148,7 @@ void SECOND(void *ptr) {
 		exit(0);
 	}
 
-	int timer_fd = configurar_timer(PERIOD_SECOND, 2 * OFFSET_NS); // Periodo de 400ms, inicia a los 200ms
+	int timer_fd = configurar_timer(PERIOD_SECOND); // Periodo de 400ms, inicia a los 200ms
     uint64_t expirations;
 
 	while (fgets(buffer, MAX_LETRAS, segundo) != NULL) {
@@ -148,10 +156,12 @@ void SECOND(void *ptr) {
         pthread_mutex_lock(&mutex);
         printf("[SECOND] Leyó: %s", buffer);
         pthread_mutex_unlock(&mutex);
+        flag_buffer_ready = 1;
     }
 
     fclose(segundo);
 	
+    finishedSecond = 1;
 	pthread_exit(0);	// Para salir correctamente del hilo.
   
     
@@ -161,19 +171,28 @@ void SECOND(void *ptr) {
 void THIRD(void *ptr) {  
 
 	configurar_prioridad();
-    int timer_fd = configurar_timer(PERIOD_THIRD, OFFSET_NS); // Periodo de 200ms, inicia a los 100ms
+    int timer_fd = configurar_timer(PERIOD_THIRD); // Periodo de 200ms, inicia a los 100ms
     uint64_t expirations;
 
     while (cont < MAX_CADENAS) {
         read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
         pthread_mutex_lock(&mutex);
 
-        if (cont < MAX_CADENAS) {
+        if (flag_buffer_ready == 1) { // Solo guardar si hay una línea lista
             strcpy(StringArray[cont], buffer);
             printf("[THIRD] Guardando: %s", StringArray[cont]);
             cont++;
+            flag_buffer_ready = 0; // Resetear la bandera
         }
 
+      //  else {
+            // No hay línea lista
+            // Si Hilo1 y Hilo2 ya terminaron, no habrá más datos
+            if (finishedFirst == 1 && finishedSecond == 1) {
+                pthread_mutex_unlock(&mutex);
+                break;  // Sal del while
+            }
+      //  }
         pthread_mutex_unlock(&mutex);
     }
 
@@ -181,6 +200,27 @@ void THIRD(void *ptr) {
     
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////
+// Función para escribir al archivo RECONSTRUIDO
+////////////////////////////////////////////////////////////////////////////////////
+void escribirEnArchivo() {
+    // Abrir en modo escritura (si ya existe, se sobrescribe)
+    reconstruido = fopen(RECONSTRUIDO, "w");
+    if (reconstruido == NULL) {
+        perror("Error al abrir archivo RECONSTRUIDO");
+        return;  
+    }
+
+    // Escribir cada línea de StringArray
+    for (int i = 0; i < cont; i++) {
+
+        fputs(StringArray[i], reconstruido);
+
+    }
+
+    fclose(reconstruido);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 //MAIN
@@ -199,6 +239,8 @@ int main(void) {
    pthread_join(hilos[1], NULL);
    pthread_join(hilos[2], NULL);
 
+    // Llamar a la función de escritura en archivo
+   escribirEnArchivo();
    printf("\nNúmero de líneas leídas: %d\n", cont);
 
    return(0);
