@@ -15,7 +15,6 @@
 //Bibliotecas
 ////////////////////////////////////////////////////////////////////////////////////
 
-
 #define _GNU_SOURCE
 
 #include <string.h>
@@ -37,18 +36,20 @@
 #define MAX_LETRAS 100  //Máximo de letras en una línea
 #define MAX_CADENAS 60  //Máximo de líneas a leer
 
-#define PRIMERO "Lab6_primero.txt"
-#define SEGUNDO "Lab6_segundo.txt"
-#define RECONSTRUIDO "Lab6_reconstruido.txt"
+#define PRIMERO "Lab6_primero.txt"    //Archivo 1
+#define SEGUNDO "Lab6_segundo.txt"  //Archivo 2
+#define RECONSTRUIDO "Lab6_reconstruido.txt"  //Archivo final
+
+
 
                                       //1 milisegundo (1 ms) equivale a 1,000,000 nanosegundos (1,000,000 ns).
-#define PERIOD_FIRST 1000000000000   // n    Periodo Hilo 1
-#define PERIOD_SECOND 1000000000000  // n    Periodo Hilo 2
-#define PERIOD_THIRD 500000000000  // n/2    Periodo Hilo 3
+#define PERIOD_FIRST  8000000  // n    Periodo Hilo 1
+#define PERIOD_SECOND 8000000  // n    Periodo Hilo 2
+#define PERIOD_THIRD  4000000  // n/2    Periodo Hilo 3
 
-#define DES_FIRST 10000         // n   Desfase  Hilo 1
-#define DES_SECOND 5000010000  // n/2  Desfase Hilo 2
-#define DES_THIRD 2500010000  //n/4    Desfase Hilo 3
+#define DES_FIRST  1000000         // n   Desfase  Hilo 1
+#define DES_SECOND DES_FIRST + 4000000  // n/2  Desfase Hilo 2
+#define DES_THIRD  DES_FIRST + 2000000  //n/4    Desfase Hilo 3
 
 
 #define MI_PRIORIDAD 1  //Definir prioridad de los hilos
@@ -63,9 +64,6 @@ char buffer[MAX_LETRAS + 1];  // Buffer global
 char StringArray[MAX_CADENAS][MAX_LETRAS+1]; // arreglo de cadenas
 int cont = 0;  //Contador de líneas leídas
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;   //Mas seguridad a los hilos, evita que dos hilos accedan a la misma variable al mismo tiempo
-
-int activa_desactiva_terminal = 0;  //0 para no mostrar lineas en terminal y si en hilos, 1 para  mostrar lineas en terminal y no en hilos
 
 ////////////////////////////////////////////////////////////////////////////////////
 //Funciones 
@@ -123,14 +121,7 @@ void FIRST(void *ptr) {
 
 	while (fgets(buffer, MAX_LETRAS, primero) != NULL) {
         read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
-        pthread_mutex_lock(&mutex);
-
-        if(activa_desactiva_terminal == 0){
-            printf("[FIRST] Leyó: %s", buffer);
-        }
-
-        pthread_mutex_unlock(&mutex);
-        flag_buffer_ready = 1;
+      
     }
 
 	fclose(primero);
@@ -155,13 +146,9 @@ void SECOND(void *ptr) {
     uint64_t expirations;
 
 	while (fgets(buffer, MAX_LETRAS, segundo) != NULL) {
+
         read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
-        pthread_mutex_lock(&mutex);
-        if(activa_desactiva_terminal == 0){
-        printf("[SECOND] Leyó: %s", buffer);
-        }
-        pthread_mutex_unlock(&mutex);
-        flag_buffer_ready = 1;
+  
     }
 
     fclose(segundo);
@@ -179,20 +166,9 @@ void THIRD(void *ptr) {
     uint64_t expirations;
 
     while (cont < MAX_CADENAS) {
-
+        strcpy(StringArray[cont], buffer);
+        cont++;
         read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
-
-        pthread_mutex_lock(&mutex);
-
-            strcpy(StringArray[cont], buffer);
-            cont++;
-
-            if(activa_desactiva_terminal == 0){
-                printf("[THIRD] Guardando: %s", StringArray[cont]);
-                }
-
-        pthread_mutex_unlock(&mutex);
-
     }
 
     pthread_exit(0);	// Para salir correctamente del hilo.
@@ -215,11 +191,9 @@ void escribirEnArchivo() {
 
         fputs(StringArray[i], reconstruido);
 
-        if(activa_desactiva_terminal == 1){
         // Mostrar en la terminal:
         printf("%s", StringArray[i]);
-        }
-        printf("\nNúmero de líneas leídas: %d\n", cont);
+        
 
     }
 
