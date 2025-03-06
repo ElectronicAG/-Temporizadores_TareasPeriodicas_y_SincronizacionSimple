@@ -37,11 +37,9 @@
 #define MAX_LETRAS 100  //Máximo de letras en una línea
 #define MAX_CADENAS 60  //Máximo de líneas a leer
 
-#define PRIMERO "Lab6_primero.txt"    //Archivo 1
-#define SEGUNDO "Lab6_segundo.txt"  //Archivo 2
-#define RECONSTRUIDO "Lab6_reconstruido.txt"  //Archivo final
-
-
+#define PRIMERO "Lab6_primero.txt"
+#define SEGUNDO "Lab6_segundo.txt"
+#define RECONSTRUIDO "Lab6_reconstruido.txt"
 
                                       //1 milisegundo (1 ms) equivale a 1,000,000 nanosegundos (1,000,000 ns).
 #define PERIOD_FIRST 1000000000000   // n    Periodo Hilo 1
