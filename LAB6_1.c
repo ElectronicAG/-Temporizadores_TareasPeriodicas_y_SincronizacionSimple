@@ -171,7 +171,7 @@ void SECOND(void *ptr) {
     
 }
 
-// FUnción del hilo 3 que guarda en StringArray
+// Función del hilo 3 que guarda en StringArray
 void THIRD(void *ptr) {  
 
 	configurar_prioridad();
