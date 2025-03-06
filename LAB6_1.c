@@ -15,7 +15,6 @@
 //Bibliotecas
 ////////////////////////////////////////////////////////////////////////////////////
 
-
 #define _GNU_SOURCE
 
 #include <string.h>
@@ -34,19 +33,26 @@
 ////////////////////////////////////////////////////////////////////////////////////
 //Definiciones
 ////////////////////////////////////////////////////////////////////////////////////|
-#define MAX_LETRAS 100
-#define MAX_CADENAS 60
+#define MAX_LETRAS 100  //Máximo de letras en una línea
+#define MAX_CADENAS 60  //Máximo de líneas a leer
 
-#define PRIMERO "Lab6_primero.txt"
-#define SEGUNDO "Lab6_segundo.txt"
-#define RECONSTRUIDO "Lab6_reconstruido.txt"
-
-#define PERIOD_FIRST 100000000  //
-#define PERIOD_THIRD 200000000  
-#define PERIOD_SECOND 500000000 
+#define PRIMERO "Lab6_primero.txt"    //Archivo 1
+#define SEGUNDO "Lab6_segundo.txt"  //Archivo 2
+#define RECONSTRUIDO "Lab6_reconstruido.txt"  //Archivo final
 
 
-#define MI_PRIORIDAD 1
+
+                                      //1 milisegundo (1 ms) equivale a 1,000,000 nanosegundos (1,000,000 ns).
+#define PERIOD_FIRST  8000000  // n    Periodo Hilo 1
+#define PERIOD_SECOND 8000000  // n    Periodo Hilo 2
+#define PERIOD_THIRD  4000000  // n/2    Periodo Hilo 3
+
+#define DES_FIRST  1000000         // n   Desfase  Hilo 1
+#define DES_SECOND DES_FIRST + 4000000  // n/2  Desfase Hilo 2
+#define DES_THIRD  DES_FIRST + 2000000  //n/4    Desfase Hilo 3
+
+
+#define MI_PRIORIDAD 1  //Definir prioridad de los hilos
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -56,18 +62,11 @@
 FILE *primero, *segundo, *reconstruido;// Archivos
 char buffer[MAX_LETRAS + 1];  // Buffer global
 char StringArray[MAX_CADENAS][MAX_LETRAS+1]; // arreglo de cadenas
-int cont = 0;
-
-int flag_buffer_ready = 0; // 0 = No hay línea nueva, 1 = Línea lista para guardar
-
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;   //Mas seguridad a los hilos, evita que dos hilos accedan a la misma variable al mismo tiempo
-
-int finishedFirst = 0;
-int finishedSecond = 0;
+int cont = 0;  //Contador de líneas leídas
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-//Funciones
+//Funciones 
 ////////////////////////////////////////////////////////////////////////////////////
 
 // Configurar prioridad del hilo
@@ -116,22 +115,17 @@ void FIRST(void *ptr) {
 		exit(0);
 	}
 
-	int timer_fd = configurar_timer(PERIOD_FIRST,1); 
+	int timer_fd = configurar_timer(PERIOD_FIRST, DES_FIRST); 
     uint64_t expirations;
 
 
 	while (fgets(buffer, MAX_LETRAS, primero) != NULL) {
         read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
-        pthread_mutex_lock(&mutex);
-        printf("[FIRST] Leyó: %s", buffer);
-        pthread_mutex_unlock(&mutex);
-        flag_buffer_ready = 1;
+      
     }
 
 	fclose(primero);
 	
-    finishedFirst = 1;
-    printf("%d",finishedFirst);
 	pthread_exit(0);	// Para salir correctamente del hilo.
 
     
@@ -148,20 +142,17 @@ void SECOND(void *ptr) {
 		exit(0);
 	}
 
-	int timer_fd = configurar_timer(PERIOD_SECOND,100); 
+	int timer_fd = configurar_timer(PERIOD_SECOND, DES_SECOND); 
     uint64_t expirations;
 
 	while (fgets(buffer, MAX_LETRAS, segundo) != NULL) {
+
         read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
-        pthread_mutex_lock(&mutex);
-        printf("[SECOND] Leyó: %s", buffer);
-        pthread_mutex_unlock(&mutex);
-        flag_buffer_ready = 1;
+  
     }
 
     fclose(segundo);
 	
-    finishedSecond = 1;
 	pthread_exit(0);	// Para salir correctamente del hilo.
   
     
@@ -171,30 +162,13 @@ void SECOND(void *ptr) {
 void THIRD(void *ptr) {  
 
 	configurar_prioridad();
-    int timer_fd = configurar_timer(PERIOD_THIRD,10000);   //1 milisegundo (1 ms) equivale a 1,000,000 nanosegundos (1,000,000 ns).
+    int timer_fd = configurar_timer(PERIOD_THIRD, DES_THIRD);   
     uint64_t expirations;
 
     while (cont < MAX_CADENAS) {
-
+        strcpy(StringArray[cont], buffer);
+        cont++;
         read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
-
-        printf("%d", flag_buffer_ready);
-        pthread_mutex_lock(&mutex);
-
-     //   if (flag_buffer_ready == 1) { // Solo guardar si hay una línea lista
-            strcpy(StringArray[cont], buffer);
-            printf("[THIRD] Guardando: %s", StringArray[cont]);
-            cont++;
-            flag_buffer_ready = 0; // Resetear la bandera
-           
-           
-      //  }
-
-    
-        pthread_mutex_unlock(&mutex);
-
-	
-    
     }
 
     pthread_exit(0);	// Para salir correctamente del hilo.
@@ -217,6 +191,10 @@ void escribirEnArchivo() {
 
         fputs(StringArray[i], reconstruido);
 
+        // Mostrar en la terminal:
+        printf("%s", StringArray[i]);
+        
+
     }
 
     fclose(reconstruido);
@@ -228,13 +206,12 @@ void escribirEnArchivo() {
 
 int main(void) {
     pthread_t hilos[3]; // 3 hilos
-    pthread_create(&hilos[0], NULL, (void*)&FIRST, NULL);
-    pthread_create(&hilos[1], NULL, (void*)&SECOND, NULL);
-    pthread_create(&hilos[2], NULL, (void*)&THIRD, NULL);
+    pthread_create(&hilos[0], NULL, (void*)&FIRST, NULL);    //Crear hilo 1
+    pthread_create(&hilos[1], NULL, (void*)&SECOND, NULL);   //Crear hilo 2
+    pthread_create(&hilos[2], NULL, (void*)&THIRD, NULL);    //Crear hilo 3
 
 
-
-   // Esperar a que el hilo termine
+   // Esperar a que elos hilos terminen
    pthread_join(hilos[0], NULL);
    pthread_join(hilos[1], NULL);
    pthread_join(hilos[2], NULL);
