@@ -118,9 +118,8 @@ void FIRST(void *ptr) {
 	int timer_fd = configurar_timer(PERIOD_FIRST, DES_FIRST); 
     uint64_t expirations;
 
-
+    read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
 	while (fgets(buffer, MAX_LETRAS, primero) != NULL) {
-        read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
       
     }
 
@@ -145,9 +144,9 @@ void SECOND(void *ptr) {
 	int timer_fd = configurar_timer(PERIOD_SECOND, DES_SECOND); 
     uint64_t expirations;
 
+    read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
 	while (fgets(buffer, MAX_LETRAS, segundo) != NULL) {
 
-        read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
   
     }
 
@@ -165,10 +164,10 @@ void THIRD(void *ptr) {
     int timer_fd = configurar_timer(PERIOD_THIRD, DES_THIRD);   
     uint64_t expirations;
 
+    read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
     while (cont < MAX_CADENAS) {
         strcpy(StringArray[cont], buffer);
         cont++;
-        read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
     }
 
     pthread_exit(0);	// Para salir correctamente del hilo.
