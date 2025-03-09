@@ -3,7 +3,7 @@
 //Universidad del valle de Guatemala
 //Alan Gomez - 22115
 //Samuel Tortola - 22094
-//Digital - 3 IE9059
+//Curso Digital 3 -  IE9059
 //Laboratorio 6 
 //Hardware: Raspberry Pi 5 8GB RAM
 //Temporizadores, Tareas Periódicas y Sincronización Simple 
