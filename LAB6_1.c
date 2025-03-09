@@ -120,7 +120,7 @@ void FIRST(void *ptr) {
 
     read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
 	while (fgets(buffer, MAX_LETRAS, primero) != NULL) {
-      
+        read(timer_fd, &expirations, sizeof(expirations));
     }
 
 	fclose(primero);
@@ -146,7 +146,7 @@ void SECOND(void *ptr) {
 
     read(timer_fd, &expirations, sizeof(expirations)); // Esperar timer
 	while (fgets(buffer, MAX_LETRAS, segundo) != NULL) {
-
+        read(timer_fd, &expirations, sizeof(expirations));
   
     }
 
@@ -168,6 +168,7 @@ void THIRD(void *ptr) {
     while (cont < MAX_CADENAS) {
         strcpy(StringArray[cont], buffer);
         cont++;
+        read(timer_fd, &expirations, sizeof(expirations));
     }
 
     pthread_exit(0);	// Para salir correctamente del hilo.
