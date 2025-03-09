@@ -11,6 +11,16 @@
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 
+/*El presente programa consiste en el ordenamiento correcto del himno nacional
+de Guatemala, el cual fue dividido en dos archivos, este código procesa cada uno 
+de los archivos y los coloca en el orden correspondiente, escribiendolos en un 
+archivo nuevo e imprimiendo el resultado en la terminal. Se usaron timers, para 
+que cada una de las líneas de los textos fuera leida y guardada en un stringarray
+se tiene un hilo para leer el archivo 1, otro para leer el archivo 2 y otro para 
+guardar el buffer común y el main, que se encarga de llamar a la función de escritura
+en el tercer archivo*/
+
+
 ////////////////////////////////////////////////////////////////////////////////////
 //Bibliotecas
 ////////////////////////////////////////////////////////////////////////////////////
