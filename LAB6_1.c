@@ -53,9 +53,9 @@ en el tercer archivo*/
 
 
                                       //1 milisegundo (1 ms) equivale a 1,000,000 nanosegundos (1,000,000 ns).
-#define PERIOD_FIRST  8000000  // n    Periodo Hilo 1
-#define PERIOD_SECOND 8000000  // n    Periodo Hilo 2
-#define PERIOD_THIRD  4000000  // n/2    Periodo Hilo 3
+#define PERIOD_FIRST  6000000  // n    Periodo Hilo 1
+#define PERIOD_SECOND 6000000  // n    Periodo Hilo 2
+#define PERIOD_THIRD  3000000  // n/2    Periodo Hilo 3
 
 #define DES_FIRST  1000000         // n   Desfase  Hilo 1
 #define DES_SECOND DES_FIRST + 4000000  // n/2  Desfase Hilo 2
@@ -197,7 +197,7 @@ void escribirEnArchivo() {
     }
 
     // Escribir cada línea de StringArray
-    for (int i = 0; i < cont; i++) {
+    for (int i = 0; i < cont - 1; i++) {
 
         fputs(StringArray[i], reconstruido);
 
@@ -206,6 +206,7 @@ void escribirEnArchivo() {
         
 
     }
+
 
     fclose(reconstruido);
 }
